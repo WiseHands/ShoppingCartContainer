@@ -462,8 +462,10 @@ class WiseShoppingCartContainer extends PolymerElement {
 
             const isAddressInsideDeliveryBoundaries = cart.client.address.isAddressInsideDeliveryBoundaries;
 
-            if (isValid && (isAddressSetFromMapView || isAddressInsideDeliveryBoundaries)){
+            if (isAddressSetFromMapView || isAddressInsideDeliveryBoundaries){
                 this._makeOrderRequest();
+            } else if (!isValid){
+                this.errorMessage = `Перевірте заповнену інфу`
             } else {
                 this.errorMessage = `Нажаль Ваша адреса не у зоні доставки. Знайдіть адресу на <a href="${this.hostname}/selectaddress">карті</a>.`;
             }
