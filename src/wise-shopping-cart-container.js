@@ -437,8 +437,8 @@ class WiseShoppingCartContainer extends PolymerElement {
         this.set('errorMessage', '');
 
         requiredInputs.forEach(input => {
-            if (input.validate()) {
-                validInputs++;
+            if (!input.validate()) {
+                input.focus();
             }
         });
         const isValid = validInputs === requiredInputs.length;
