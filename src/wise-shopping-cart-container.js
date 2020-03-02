@@ -185,13 +185,13 @@ class WiseShoppingCartContainer extends PolymerElement {
                                     <h3>Тип оплати:</h3>
                                     <paper-radio-group id="paymentType" selected="[[cart.paymentType]]"
                                                        on-selected-changed="_onPaymentTypeChange">
-                                        <template is="dom-if" if="[[cart.configuration.payment.cash.isActive]]">
+                                        <template is="dom-if" if="[[cart.configuration.payment.creditCard.isActivePayByCreditCard]]">
                                             <paper-radio-button name="CREDITCARD" title="Платіжна система liqpay бере комісію за опрацювання оплати, ось чому ви бачите додану вартість - це комісія платіжної системи">
                                                 [[_computeLabel(cart.configuration.payment.creditCard)]]
                                             </paper-radio-button>
                                         </template>
                                         <template is="dom-if"
-                                                  if="[[cart.configuration.payment.creditCard.isActivePayByCash]]">
+                                                  if="[[cart.configuration.payment.cash.isActivePayByCash]]">
                                             <paper-radio-button name="CASHONDELIVERY">[[cart.configuration.payment.cash.label]]</paper-radio-button>
                                         </template>
                                     </paper-radio-group>
@@ -657,7 +657,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     }
 
     _onPaymentTypeChange(event, data) {
-        const params = `?paymenttype=${data.value}${this.addCartIdParamIfAvailable(false)}`;;
+        const params = `?paymenttype=${data.value}${this.addCartIdParamIfAvailable(false)}`;
         this._generateRequest('PUT', this._generateRequestUrl('/api/cart/payment', params));
     }
 
