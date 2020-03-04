@@ -199,7 +199,8 @@ class WiseShoppingCartContainer extends PolymerElement {
 
                                 <paper-card>
                                     <h3>Замовник:</h3>
-                                    <paper-input pattern=".*\\S.*" id="clientName" label="Ім'я" required
+                                    <paper-input pattern=".*\\S.*" id="clientName"
+                                                 label="[[changeClientName(cart.configuration.additionalConfiguration.labelForCustomerName)]]" required
                                                  error-message="Заповніть, будь ласка, це поле"
                                                  value="[[cart.client.name]]"
                                                  on-blur="_validateAndSendClientInfo"></paper-input>
@@ -333,6 +334,13 @@ class WiseShoppingCartContainer extends PolymerElement {
                 value: 'AIzaSyAuKg9jszEEgoGfUlIqmd4n9czbQsgcYRM'
             }
         };
+    }
+
+    changeClientName(labelForCustomerName){
+        if (labelForCustomerName){
+            return labelForCustomerName;
+        }
+        return `Ім'я`;
     }
 
     _computeLabel(paymentInfo) {
