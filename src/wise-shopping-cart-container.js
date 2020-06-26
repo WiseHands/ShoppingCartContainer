@@ -219,30 +219,30 @@ class WiseShoppingCartContainer extends PolymerElement {
                                 </paper-card>
                                 <template is="dom-if" if="[[_isAddressCardVisible(cart.deliveryType)]]">
                                     <paper-card>
-                                        <h3>Адреса:</h3>
+                                        <h3>[[addressGeneralLabel]]</h3>
                                         <div hidden="[[!_isCourierDeliveryType(cart.deliveryType)]]">
                                             <span class="info-span" hidden="[[!cart.client.address.isAddressSetFromMapView]]">
                                                 Вказати місцезнаходження на <a href="/[[language]]/selectaddress">карті</a>.</span>
-                                            <paper-input id="street" pattern=".*\\S.*" label="Вулиця"
+                                            <paper-input id="street" pattern=".*\\S.*" label="[[pageSelectAddressPlaceholderStreet]]"
                                                          disabled="[[cart.client.address.isAddressSetFromMapView]]"
                                                          value="{{cart.client.address.street}}" required
                                                          error-message="[[errorMessagePleaseWriteLabel]]"
                                                          on-blur="_validateAndGeocodeAddress"></paper-input>
                                             <paper-input id="building" pattern=".*\\S.*"
                                                          disabled="[[cart.client.address.isAddressSetFromMapView]]"
-                                                         label="Будинок" value="{{cart.client.address.building}}"
+                                                         label="[[pageSelectAddressPlaceholderHouse]]" value="{{cart.client.address.building}}"
                                                          required error-message="[[errorMessagePleaseWriteLabel]]"
                                                          on-blur="_validateAndGeocodeAddress"></paper-input>
-                                            <paper-input id="entrance" label="Під'їзд"
+                                            <paper-input id="entrance" label="[[addressEntranceLabel]]"
                                                          value="[[cart.client.address.entrance]]"
                                                          on-blur="_validateAndSendClientAddressInfo"></paper-input>
-                                            <paper-input id="entranceCode" label="Код до під'їзду"
+                                            <paper-input id="entranceCode" label="[[addressEntranceCodeLabel]]"
                                                          value="[[cart.client.address.entranceCode]]"
                                                          on-blur="_validateAndSendClientAddressInfo"></paper-input>
-                                            <paper-input id="floor" label="Поверх"
+                                            <paper-input id="floor" label="[[addressFloorLabel]]"
                                                          value="[[cart.client.address.floor]]"
                                                          on-blur="_validateAndSendClientAddressInfo"></paper-input>
-                                            <paper-input id="apartment" label="Квартира"
+                                            <paper-input id="apartment" label="[[addressApartmentLabel]]"
                                                          value="[[cart.client.address.apartment]]"
                                                          on-blur="_validateAndSendClientAddressInfo"></paper-input>
                                         </div>
@@ -327,20 +327,28 @@ class WiseShoppingCartContainer extends PolymerElement {
             customerEmailLabel: String,
             customerCommentLabel: String,
 
-            currencyLabel: {
-                type: String,
-                value: 'USD'
-            },
+            addressGeneralLabel: String,
+            pageSelectAddressPlaceholderStreet: String,
+            pageSelectAddressPlaceholderHouse: String,
+            addressEntranceLabel: String,
+            addressEntranceCodeLabel: String,
+            addressFloorLabel: String,
+            addressApartmentLabel: String,
+
 
             basketEmptyLabel: String,
             startShoppingLabel: String,
             courierLabel: String,
 
+            currencyLabel: {
+                type: String,
+                value: 'USD'
+            },
+
             isMakeOrderRequestRunning: {
                 type: Boolean,
                 value: false
             },
-
             googleMapsApiKey: {
                 type: String,
                 value: 'AIzaSyAuKg9jszEEgoGfUlIqmd4n9czbQsgcYRM'
@@ -352,7 +360,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         if (labelForCustomerName){
             return labelForCustomerName;
         }
-        return `Ім'я`;
+        return this.customerNameLabel;
     }
 
     _computeLabel(paymentInfo) {
@@ -376,18 +384,14 @@ class WiseShoppingCartContainer extends PolymerElement {
         if(!this.cartId) {
             return param;
         }
-
         if(isFirst) {
             param += '?'
         } else {
             param += '&'
         }
-
         if(this.cartId) {
             param += `cartId=${this.cartId}`
         }
-        console.log(`addCartIdParamIfAvailable ${param}`);
-
         return param;
     }
 
