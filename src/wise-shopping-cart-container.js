@@ -156,7 +156,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                 <div class="cart-container">
                     <div class="cart">
                         <div class="shopping-cart-container">
-                            <wise-shopping-cart currency-label="[[currencyLabel]]"cart-items="[[cart.items]]" basket-empty-label="[[basketEmptyLabel]]"
+                            <wise-shopping-cart currency-label="[[currencyLabel]]" cart-items="[[cart.items]]" basket-empty-label="[[basketEmptyLabel]]"
                                                 start-shopping-label="[[startShoppingLabel]]">
                             </wise-shopping-cart>
                         </div>
@@ -222,7 +222,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                         <h3>[[addressGeneralLabel]]</h3>
                                         <div hidden="[[!_isCourierDeliveryType(cart.deliveryType)]]">
                                             <span class="info-span" hidden="[[!cart.client.address.isAddressSetFromMapView]]">
-                                                Вказати місцезнаходження на <a href="/[[language]]/selectaddress">карті</a>.</span>
+                                                [[mapChooseYourPlaceLabel]] <a href="/[[language]]/selectaddress">[[mapLabel]]</a>.</span>
                                             <paper-input id="street" pattern=".*\\S.*" label="[[pageSelectAddressPlaceholderStreet]]"
                                                          disabled="[[cart.client.address.isAddressSetFromMapView]]"
                                                          value="{{cart.client.address.street}}" required
@@ -314,7 +314,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             errorMessagePleaseChooseDeliveryLabel: String,
             errorMessagePleaseChoosePaymentLabel: String,
             errorMessagePleaseMinimumDeliveryLabel: String,
-
+            errorMessageFillInfo: String,
             buttonNextLabel: String,
             deliveryTypeLabel: String,
             paymentTypeLabel: String,
@@ -334,6 +334,10 @@ class WiseShoppingCartContainer extends PolymerElement {
             addressEntranceCodeLabel: String,
             addressFloorLabel: String,
             addressApartmentLabel: String,
+
+            mapChooseYourPlaceLabel: String,
+            mapLabel: String,
+            mapErrorMessage: String,
 
 
             basketEmptyLabel: String,
@@ -397,6 +401,8 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     ready() {
         super.ready();
+
+
         const params = this.addCartIdParamIfAvailable(true);
         const url = this._generateRequestUrl('/api/cart', params);
         this._generateRequest('GET', url);
@@ -425,6 +431,11 @@ class WiseShoppingCartContainer extends PolymerElement {
             this._generateRequest('DELETE', this._generateRequestUrl('/api/cart', params));
             }
         );
+
+        this.addEventListener('start-shopping', function (e) {
+            console.log('start-shopping', e);
+            window.location = '/';
+        });
 
     }
 
@@ -497,9 +508,9 @@ class WiseShoppingCartContainer extends PolymerElement {
             if (isValid && (isAddressSetFromMapView || isAddressInsideDeliveryBoundaries)){
                 this._makeOrderRequest();
             } else if (!isValid){
-                this.errorMessage = `Перевірте заповнену інформацію`
+                this.errorMessage = `${this.errorMessageFillInfo}`
             } else {
-                this.errorMessage = `Нажаль Ваша адреса не у зоні доставки. Знайдіть адресу на <a href="${this.hostname}/${this.language}/selectaddress">карті</a>.`;
+                this.errorMessage = `${this.mapErrorMessage} <a href="${this.hostname}/${this.language}/selectaddress">${this.mapLabel}</a>.`;
             }
         }
     }
