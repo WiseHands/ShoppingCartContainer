@@ -173,7 +173,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.postDepartment.isPostDepartmentActive]]">
-                                            <paper-radio-button name="POSTSERVICE">[[cart.configuration.delivery.postDepartment.label]]</paper-radio-button>
+                                            <paper-radio-button name="POSTSERVICE">[[_translatePostDepartmentLabel(cart.configuration.delivery.postDepartment.translationBucket)]]</paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.selfTake.isSelfTakeActive]]">
@@ -383,6 +383,18 @@ class WiseShoppingCartContainer extends PolymerElement {
         return label;
     }
 
+    _translatePostDepartmentLabel(postInfo){
+        let label = '';
+        postInfo.translationList.forEach(item => {
+           if (item.language === this.language){
+               console.log(this.language);
+               label = item.content;
+           }
+        });
+
+        return label;
+    }
+
     addCartIdParamIfAvailable(isFirst) {
         let param = '';
         if(!this.cartId) {
@@ -406,7 +418,6 @@ class WiseShoppingCartContainer extends PolymerElement {
         const params = this.addCartIdParamIfAvailable(true);
         const url = this._generateRequestUrl('/api/cart', params);
         this._generateRequest('GET', url);
-        console.log('get current language', language);
         this.addEventListener('update-quantity', event => {
             console.log("/api/cart/update-quantity =>", event.detail);
             let params = `?uuid=${event.detail.itemUuid}&quantity=${event.detail.quantity}${this.addCartIdParamIfAvailable(false)}`;
