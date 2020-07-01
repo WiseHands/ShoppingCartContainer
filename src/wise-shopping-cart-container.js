@@ -173,7 +173,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.postDepartment.isPostDepartmentActive]]">
-                                            <paper-radio-button name="POSTSERVICE">[[_translatePostDepartmentLabel(cart.configuration.delivery.postDepartment.translationBucket)]]</paper-radio-button>
+                                            <paper-radio-button name="POSTSERVICE">[[_translatePostDepartmentLabel(cart.configuration.delivery.postDepartment)]]</paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.selfTake.isSelfTakeActive]]">
@@ -385,20 +385,24 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     _translatePostDepartmentLabel(postInfo){
         let label = '';
-        console.log("postInfo.translationBucket ", postInfo.translationBucket);
-            postInfo.translationList.forEach(item => {
+        if(postInfo.translationBucket){
+            console.log("postInfo.translationBucket ", postInfo.translationBucket);
+            postInfo.translationBucket.translationList.forEach(item => {
                 if (item.language === this.language){
                     console.log(this.language);
                     label = item.content;
                 }
             });
+        } else {
+            label = postInfo.label;
+        }
 
         return label;
     }
 
     _translateSelfTakeLabel(selfTakeInfo){
         let label = '';
-        console.log("postInfo.translationBucket ", selfTakeInfo.translationBucket);
+        console.log("selfTakeInfo.translationBucket ", selfTakeInfo.translationBucket);
         if(selfTakeInfo.translationBucket){
            selfTakeInfo.translationBucket.translationList.forEach(item => {
               if (item.language === this.language){
@@ -414,8 +418,8 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     _translateCourierLabel(courierInfo){
         let label = '';
-        console.log("postInfo.translationBucket ", courierInfo.translationBucket);
         if(courierInfo.translationBucket){
+            console.log("courierInfo.translationBucket ", courierInfo.translationBucket);
             courierInfo.translationBucket.translationList.forEach(item => {
                 if (item.language === this.language){
                     console.log(this.language);
