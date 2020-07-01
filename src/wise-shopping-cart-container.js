@@ -169,7 +169,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                                        on-selected-changed="_onDeliveryTypeChange">
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.courier.isCourierActive]]">
-                                            <paper-radio-button name="COURIER">[[cart.configuration.delivery.courier.label]] [[_computeCourierLabel(cart.configuration.delivery.courier)]]</paper-radio-button>
+                                            <paper-radio-button name="COURIER">[[_translateCourierLabel(cart.configuration.delivery.courier)]] [[_computeCourierLabel(cart.configuration.delivery.courier)]]</paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.postDepartment.isPostDepartmentActive]]">
@@ -177,7 +177,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.selfTake.isSelfTakeActive]]">
-                                            <paper-radio-button name="SELFTAKE">[[cart.configuration.delivery.selfTake.label]]</paper-radio-button>
+                                            <paper-radio-button name="SELFTAKE">[[_translateSelfTakeLabel(cart.configuration.delivery.selfTake)]]</paper-radio-button>
                                         </template>
                                     </paper-radio-group>
                                 </paper-card>
@@ -385,15 +385,49 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     _translatePostDepartmentLabel(postInfo){
         let label = '';
-        postInfo.translationList.forEach(item => {
-           if (item.language === this.language){
-               console.log(this.language);
-               label = item.content;
-           }
-        });
+        console.log("postInfo.translationBucket ", postInfo.translationBucket);
+            postInfo.translationList.forEach(item => {
+                if (item.language === this.language){
+                    console.log(this.language);
+                    label = item.content;
+                }
+            });
 
         return label;
     }
+
+    _translateSelfTakeLabel(selfTakeInfo){
+        let label = '';
+        console.log("postInfo.translationBucket ", selfTakeInfo.translationBucket);
+        if(selfTakeInfo.translationBucket){
+           selfTakeInfo.translationBucket.translationList.forEach(item => {
+              if (item.language === this.language){
+                    console.log(this.language);
+                    label = item.content;
+              }
+           });
+        } else {
+           label = selfTakeInfo.label;
+        }
+        return label;
+    }
+
+    _translateCourierLabel(courierInfo){
+        let label = '';
+        console.log("postInfo.translationBucket ", courierInfo.translationBucket);
+        if(courierInfo.translationBucket){
+            courierInfo.translationBucket.translationList.forEach(item => {
+                if (item.language === this.language){
+                    console.log(this.language);
+                    label = item.content;
+                }
+            });
+        } else {
+            label = courierInfo.label;
+        }
+        return label;
+    }
+
 
     addCartIdParamIfAvailable(isFirst) {
         let param = '';
