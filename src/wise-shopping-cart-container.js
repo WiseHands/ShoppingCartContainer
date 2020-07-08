@@ -193,7 +193,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.payment.cash.isActivePayByCash]]">
-                                            <paper-radio-button name="CASHONDELIVERY">[[cart.configuration.payment.cash.label]]</paper-radio-button>
+                                            <paper-radio-button name="CASHONDELIVERY">[[_translateCashLabe(cart.configuration.payment.cash)]]</paper-radio-button>
                                         </template>
                                     </paper-radio-group>
                                 </paper-card>
@@ -367,17 +367,46 @@ class WiseShoppingCartContainer extends PolymerElement {
         return this.customerNameLabel;
     }
 
-    _computeLabel(paymentInfo) {
-        if (paymentInfo.clientPaysProcessingCommission){
+    _computeLabel(creditCardInfo) {
+        if (creditCardInfo.clientPaysProcessingCommission){
             return `${paymentInfo.label} (+${paymentInfo.paymentComission * 100} %)`;
         }
-        return paymentInfo.label;
+        let label = '';
+        if(creditCardInfo.translationBucket){
+            console.log("postInfo.translationBucket ", creditCardInfo.translationBucket);
+            creditCardInfo.translationBucket.translationList.forEach(item => {
+                if (item.language === this.language){
+                    console.log(this.language);
+                    label = item.content;
+                }
+            });
+        } else {
+            label = creditCardInfo.label;
+        }
+        return label;
     }
 
     _computeCourierLabel(courierInfo){
         let label = '';
         if(this.total < courierInfo.minimumPaymentForFreeDelivery) {
             label = ` ( + ${courierInfo.deliveryPrice} ${this.currencyLabel})`
+        }
+
+        return label;
+    }
+
+    _translateCashLabe(cashInfo){
+        let label = '';
+        if(cashInfo.translationBucket){
+            console.log("postInfo.translationBucket ", cashInfo.translationBucket);
+            cashInfo.translationBucket.translationList.forEach(item => {
+                if (item.language === this.language){
+                    console.log(this.language);
+                    label = item.content;
+                }
+            });
+        } else {
+            label = cashInfo.label;
         }
 
         return label;
@@ -664,7 +693,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     _computeProductsTotal(items) {
         let total = 0;
-        items.forEach(item => total += item.quantity * item.price)
+        items.forEach(item => total += item.quantity * item.price);
         total += this._computeAdditionsTotal(items);
         return total;
     }
@@ -707,7 +736,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             this.cart = await this.updateCartWithAddressLocation(location);
             return this.cart;
         } catch (e) {
-            this.errorMessage = `Нажаль Ваша адреса не у зоні доставки. Знайдіть адресу на <a href="${this.hostname}/${this.language}/selectaddress">карті</a>.`;
+            this.errorMessage = `${this.mapErrorMessage} <a href="${this.hostname}/${this.language}/selectaddress">${this.mapLabel}</a>.`;
         }
     }
 
