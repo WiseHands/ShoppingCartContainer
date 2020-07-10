@@ -156,7 +156,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                 <div class="cart-container">
                     <div class="cart">
                         <div class="shopping-cart-container">
-                            <wise-shopping-cart currency-label="[[currencyLabel]]" cart-items="[[cart.items]]" basket-empty-label="[[basketEmptyLabel]]"
+                            <wise-shopping-cart language="[[language]]" currency-label="[[currencyLabel]]" cart-items="[[cart.items]]" basket-empty-label="[[basketEmptyLabel]]"
                                                 start-shopping-label="[[startShoppingLabel]]">
                             </wise-shopping-cart>
                         </div>
@@ -451,7 +451,6 @@ class WiseShoppingCartContainer extends PolymerElement {
             console.log("courierInfo.translationBucket ", courierInfo.translationBucket);
             courierInfo.translationBucket.translationList.forEach(item => {
                 if (item.language === this.language){
-                    console.log(this.language);
                     label = item.content;
                 }
             });
