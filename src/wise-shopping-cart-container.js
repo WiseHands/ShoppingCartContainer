@@ -156,7 +156,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                 <div class="cart-container">
                     <div class="cart">
                         <div class="shopping-cart-container">
-                            <wise-shopping-cart language="[[language]]" currency-label="[[currencyLabel]]" cart-items="[[cart.items]]" basket-empty-label="[[basketEmptyLabel]]"
+                            <wise-shopping-cart currency-label="[[currencyLabel]]" cart-items="[[cart.items]]" basket-empty-label="[[basketEmptyLabel]]"
                                                 start-shopping-label="[[startShoppingLabel]]">
                             </wise-shopping-cart>
                         </div>
@@ -187,13 +187,13 @@ class WiseShoppingCartContainer extends PolymerElement {
                                     <paper-radio-group id="paymentType" selected="[[cart.paymentType]]"
                                                        on-selected-changed="_onPaymentTypeChange">
                                         <template is="dom-if" if="[[cart.configuration.payment.creditCard.isActivePayByCreditCard]]">
-                                            <paper-radio-button name="CREDITCARD" title="Платіжна система liqpay бере комісію за опрацювання оплати, ось чому ви бачите додану вартість - це комісія платіжної системи">
+                                            <paper-radio-button name="CREDITCARD" >
                                                 [[_computeLabel(cart.configuration.payment.creditCard)]]
                                             </paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.payment.cash.isActivePayByCash]]">
-                                            <paper-radio-button name="CASHONDELIVERY">[[_translateCashLabe(cart.configuration.payment.cash)]]</paper-radio-button>
+                                            <paper-radio-button name="CASHONDELIVERY">[[_translateCashLabel(cart.configuration.payment.cash)]]</paper-radio-button>
                                         </template>
                                     </paper-radio-group>
                                 </paper-card>
@@ -395,7 +395,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         return label;
     }
 
-    _translateCashLabe(cashInfo){
+    _translateCashLabel(cashInfo){
         let label = '';
         if(cashInfo.translationBucket){
             console.log("postInfo.translationBucket ", cashInfo.translationBucket);
@@ -511,7 +511,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
         this.addEventListener('start-shopping', function (e) {
             console.log('start-shopping', e);
-            window.location = '/';
+            window.location = `/${this.language}/shop`;
         });
         this.addEventListener('order-created', function (e) {
           console.log('order-created for credit card payment', e);
