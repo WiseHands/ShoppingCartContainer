@@ -169,15 +169,15 @@ class WiseShoppingCartContainer extends PolymerElement {
                                                        on-selected-changed="_onDeliveryTypeChange">
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.courier.isCourierActive]]">
-                                            <paper-radio-button name="COURIER">[[_translateCourierLabel(cart.configuration.delivery.courier)]] [[_computeCourierLabel(cart.configuration.delivery.courier)]]</paper-radio-button>
+                                            <paper-radio-button name="COURIER">[[_translateLabel(cart.configuration.delivery.courier)]] [[_computeCourierLabel(cart.configuration.delivery.courier)]]</paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.postDepartment.isPostDepartmentActive]]">
-                                            <paper-radio-button name="POSTSERVICE">[[_translatePostDepartmentLabel(cart.configuration.delivery.postDepartment)]]</paper-radio-button>
+                                            <paper-radio-button name="POSTSERVICE">[[_translateLabel(cart.configuration.delivery.postDepartment)]]</paper-radio-button>
                                         </template>
                                         <template is="dom-if"
                                                   if="[[cart.configuration.delivery.selfTake.isSelfTakeActive]]">
-                                            <paper-radio-button name="SELFTAKE">[[_translateSelfTakeLabel(cart.configuration.delivery.selfTake)]]</paper-radio-button>
+                                            <paper-radio-button name="SELFTAKE">[[_translateLabel(cart.configuration.delivery.selfTake)]]</paper-radio-button>
                                         </template>
                                     </paper-radio-group>
                                 </paper-card>
@@ -191,9 +191,8 @@ class WiseShoppingCartContainer extends PolymerElement {
                                                 [[_computeLabel(cart.configuration.payment.creditCard)]]
                                             </paper-radio-button>
                                         </template>
-                                        <template is="dom-if"
-                                                  if="[[cart.configuration.payment.cash.isActivePayByCash]]">
-                                            <paper-radio-button name="CASHONDELIVERY">[[_translateCashLabel(cart.configuration.payment.cash)]]</paper-radio-button>
+                                        <template is="dom-if" if="[[cart.configuration.payment.cash.isActivePayByCash]]">
+                                            <paper-radio-button name="CASHONDELIVERY">[[_translateLabel(cart.configuration.payment.cash)]]</paper-radio-button>
                                         </template>
                                     </paper-radio-group>
                                 </paper-card>
@@ -399,67 +398,16 @@ class WiseShoppingCartContainer extends PolymerElement {
         return label;
     }
 
-    _translateCashLabel(cashInfo){
+    _translateLabel(object){
         let label = '';
-        if(cashInfo.translationBucket){
-            console.log("postInfo.translationBucket ", cashInfo.translationBucket);
-            cashInfo.translationBucket.translationList.forEach(item => {
-                if (item.language === this.language){
-                    console.log(this.language);
-                    label = item.content;
-                }
-            });
-        } else {
-            label = cashInfo.label;
-        }
-
-        return label;
-    }
-
-    _translatePostDepartmentLabel(postInfo){
-        let label = '';
-        if(postInfo.translationBucket){
-            console.log("postInfo.translationBucket ", postInfo.translationBucket);
-            postInfo.translationBucket.translationList.forEach(item => {
-                if (item.language === this.language){
-                    console.log(this.language);
-                    label = item.content;
-                }
-            });
-        } else {
-            label = postInfo.label;
-        }
-
-        return label;
-    }
-
-    _translateSelfTakeLabel(selfTakeInfo){
-        let label = '';
-        console.log("selfTakeInfo.translationBucket ", selfTakeInfo.translationBucket);
-        if(selfTakeInfo.translationBucket){
-           selfTakeInfo.translationBucket.translationList.forEach(item => {
-              if (item.language === this.language){
-                    console.log(this.language);
-                    label = item.content;
-              }
-           });
-        } else {
-           label = selfTakeInfo.label;
-        }
-        return label;
-    }
-
-    _translateCourierLabel(courierInfo){
-        let label = '';
-        if(courierInfo.translationBucket){
-            console.log("courierInfo.translationBucket ", courierInfo.translationBucket);
-            courierInfo.translationBucket.translationList.forEach(item => {
+        if(object.translationBucket){
+            object.translationBucket.translationList.forEach(item => {
                 if (item.language === this.language){
                     label = item.content;
                 }
             });
         } else {
-            label = courierInfo.label;
+            label = object.label;
         }
         return label;
     }
@@ -527,10 +475,16 @@ class WiseShoppingCartContainer extends PolymerElement {
             document.querySelector('.form-container').append(form);
             form.submit();
           } else {
-            window.location = '/done';
+            
+            const link = this._generateLinkWithQrCode(this.qrUuid, '/done');
+            window.location = link;
           }
         });
 
+    }
+    
+    _generateLinkWithQrCode(qrId, url){
+        return qrId ? `${url}?qr_uuid=${qrId}` : `${url}`;
     }
 
     hideDeliveryTypeIfQrPresent() {
@@ -591,6 +545,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                 isValid = false;
             }
         });
+        
         const isCourierDeliverySelected = this.cart.deliveryType === 'COURIER';
 
         if (isValid && !isCourierDeliverySelected) {
@@ -619,17 +574,17 @@ class WiseShoppingCartContainer extends PolymerElement {
         }
     }
 
-    _makeOrderRequest(){
+    _makeOrderRequest() {
         if(this.isMakeOrderRequestRunning) return;
         const ajax = this.$.makeOrderAjax;
-        ajax.url = `${this.hostname}/order/${this.language}?qr_uuid=${this.qrUuid}`;
+        const url = `${this.hostname}/order/${this.language}`;
+        ajax.url = this._generateLinkWithQrCode(this.qrUuid, url);
         ajax.method = 'POST';
         this.isMakeOrderRequestRunning = true;
         ajax.generateRequest();
     }
 
-    _onOrderResponseChanged (event, detail)
-    {
+    _onOrderResponseChanged (event, detail) {
         console.log('order response', event, detail);
         this.isMakeOrderRequestRunning = false;
         this.cart = {items: []};
@@ -637,20 +592,20 @@ class WiseShoppingCartContainer extends PolymerElement {
         const isSuccessful = status >= 200 && status <= 300;
 
         if(isSuccessful) {
-                this.dispatchEvent(new CustomEvent('order-created',
-                    {
-                        bubbles: true,
-                        composed: true,
-                        detail: detail
-                    })
-                );
+            this.dispatchEvent(new CustomEvent('order-created',
+                {
+                    bubbles: true,
+                    composed: true,
+                    detail: detail
+                })
+            );
         } else {
-                this.dispatchEvent(new CustomEvent('order-processing-error',
-                    {
-                        bubbles: true,
-                        composed: true
-                    })
-                );
+            this.dispatchEvent(new CustomEvent('order-processing-error',
+                {
+                    bubbles: true,
+                    composed: true
+                })
+            );
         }
 
     }
