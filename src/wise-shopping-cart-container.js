@@ -464,7 +464,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
         this.addEventListener('start-shopping', function (e) {
             console.log('start-shopping', e);
-            window.location = `/${this.language}/shop`;
+            window.location = this._generateLinkWithQrCode(this.qrUuid, `/${this.language}/shop`);
         });
         this.addEventListener('order-created', function (e) {
           console.log('order-created for credit card payment', e);
@@ -475,9 +475,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             document.querySelector('.form-container').append(form);
             form.submit();
           } else {
-            
-            const link = this._generateLinkWithQrCode(this.qrUuid, '/done');
-            window.location = link;
+            window.location = this._generateLinkWithQrCode(this.qrUuid, '/done');
           }
         });
 
