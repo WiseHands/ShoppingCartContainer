@@ -377,10 +377,10 @@ class WiseShoppingCartContainer extends PolymerElement {
         }
         let label = '';
         if(creditCardInfo.translationBucket){
-            console.log("postInfo.translationBucket ", creditCardInfo.translationBucket);
+
             creditCardInfo.translationBucket.translationList.forEach(item => {
                 if (item.language === this.language){
-                    console.log(this.language);
+
                     label = item.content;
                 }
             });
@@ -475,7 +475,8 @@ class WiseShoppingCartContainer extends PolymerElement {
             document.querySelector('.form-container').append(form);
             form.submit();
           } else {
-            window.location = this._generateLinkWithQrCode(this.qrUuid, '/done');
+            const link = this._generateLinkWithQrCode(this.qrUuid, '/done');
+            window.location = link;
           }
         });
 
@@ -514,6 +515,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     }
 
     async _proceed() {
+        console.log("get cart before make order");
         const deliveryType = this.$.deliveryType;
         const paymentType = this.$.paymentType;
         const requiredInputs = Array.from(this.shadowRoot.querySelectorAll('paper-input[required]')).filter(input => input.offsetWidth > 0 && input.offsetHeight > 0);
@@ -547,7 +549,24 @@ class WiseShoppingCartContainer extends PolymerElement {
         const isCourierDeliverySelected = this.cart.deliveryType === 'COURIER';
 
         if (isValid && !isCourierDeliverySelected) {
-            this._makeOrderRequest();
+            const postDepartmentNumber = this.shadowRoot.getElementById('clientPostDepartmentNumber');
+
+            if (postDepartmentNumber) {
+                this.cart.client.postDepartamentInfo.postDepartmentNumber = postDepartmentNumber.value;
+            }
+
+            const cart = {
+                deliveryType: this.cart.deliveryType,
+                paymentType: this.cart.paymentType,
+                clientName: this.cart.client.name,
+                clientPhone: this.cart.client.phone,
+                clientEmail: this.cart.client.email,
+                clientComments: this.cart.client.comments,
+                clientCity: this.cart.client.postDepartamentInfo.city,
+                clientPostDepartmentNumber: this.cart.client.postDepartamentInfo.postDepartmentNumber
+            }
+            console.log("get cart before make order after validation => ", cart);
+            this._makeOrderRequest(JSON.stringify(cart));
         }
 
         if(isCourierDeliverySelected) {
@@ -563,7 +582,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             const isAddressInsideDeliveryBoundaries = cart.client.address.isAddressInsideDeliveryBoundaries;
 
             if (isValid && (isAddressSetFromMapView || isAddressInsideDeliveryBoundaries)){
-                this._makeOrderRequest();
+                this._makeOrderRequest(null);
             } else if (!isValid){
                 this.errorMessage = `${this.errorMessageFillInfo}`
             } else {
@@ -572,7 +591,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         }
     }
 
-    _makeOrderRequest() {
+    _makeOrderRequest(cart) {
         if(this.isMakeOrderRequestRunning) return;
         const ajax = this.$.makeOrderAjax;
         const url = `${this.hostname}/order/${this.language}`;
@@ -610,7 +629,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     _onLastResponseChanged (event, response) {
         const cartData = response.value;
-        console.log(cartData);
+        console.log("_onLastResponseChanged", this.cart = cartData);
         this.dispatchEvent(new CustomEvent('shopping-cart-api-response',
             {
                 detail: cartData,
@@ -659,18 +678,18 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     _computeProductsTotal(items) {
         let total = 0;
-        items.forEach(item => total += item.quantity * item.price);
-        total += this._computeAdditionsTotal(items);
+        items.forEach(item => total += item.quantity * (item.price + this._computeAdditionsTotal(item)));
+        //total += this._computeAdditionsTotal(items);
         return total;
     }
 
-    _computeAdditionsTotal(items) {
+    _computeAdditionsTotal(additions) {
         let additionsTotal = 0;
-        items.forEach(item => {
-            item.additionList.forEach(addition => {
-                additionsTotal += addition.price * addition.quantity;
-            })
-        });
+
+        additions.additionList.forEach(addition => {
+            additionsTotal += addition.price * addition.quantity;
+        })
+
         return additionsTotal;
     }
 
