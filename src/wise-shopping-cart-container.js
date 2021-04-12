@@ -156,7 +156,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                 <div class="cart-container">
                     <div class="cart">
                         <div class="shopping-cart-container">
-                            <wise-shopping-cart currency-label="[[currencyLabel]]" cart-items="[[cart.items]]" basket-empty-label="[[basketEmptyLabel]]"
+                            <wise-shopping-cart selected-language = "[[selectedLanguage]]" currency-label="[[currencyLabel]]" cart-items="[[cart.items]]" basket-empty-label="[[basketEmptyLabel]]"
                                                 start-shopping-label="[[startShoppingLabel]]">
                             </wise-shopping-cart>
                         </div>
@@ -221,7 +221,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                                         <h3>[[addressGeneralLabel]]</h3>
                                         <div hidden="[[!_isCourierDeliveryType(cart.deliveryType)]]">
                                             <span class="info-span" hidden="[[!cart.client.address.isAddressSetFromMapView]]">
-                                                [[mapChooseYourPlaceLabel]] <a href="/[[language]]/selectaddress">[[mapLabel]]</a>.</span>
+                                                [[mapChooseYourPlaceLabel]] <a href="/[[selectedLanguage]]/selectaddress">[[mapLabel]]</a>.</span>
                                             <paper-input id="street" pattern=".*\\S.*" label="[[pageSelectAddressPlaceholderStreet]]"
                                                          disabled="[[cart.client.address.isAddressSetFromMapView]]"
                                                          value="{{cart.client.address.street}}" required
@@ -288,7 +288,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
     static get properties() {
         return {
-            language: String,
+            selectedLanguage: String,
             cart: {
                 type: Object,
                 value: {
@@ -379,7 +379,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         if(creditCardInfo.translationBucket){
 
             creditCardInfo.translationBucket.translationList.forEach(item => {
-                if (item.language === this.language){
+                if (item.language === this.selectedLanguage){
 
                     label = item.content;
                 }
@@ -402,7 +402,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         let label = '';
         if(object.translationBucket){
             object.translationBucket.translationList.forEach(item => {
-                if (item.language === this.language){
+                if (item.language === this.selectedLanguage){
                     label = item.content;
                 }
             });
@@ -464,7 +464,7 @@ class WiseShoppingCartContainer extends PolymerElement {
 
         this.addEventListener('start-shopping', function (e) {
             console.log('start-shopping', e);
-            window.location = this._generateLinkWithQrCode(this.qrUuid, `/${this.language}/shop`);
+            window.location = this._generateLinkWithQrCode(this.qrUuid, `/${this.selectedLanguage}/shop`);
         });
         this.addEventListener('order-created', function (e) {
           console.log('order-created for credit card payment', e);
@@ -586,7 +586,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             } else if (!isValid){
                 this.errorMessage = `${this.errorMessageFillInfo}`
             } else {
-                this.errorMessage = `${this.mapErrorMessage} <a href="${this.hostname}/${this.language}/selectaddress">${this.mapLabel}</a>.`;
+                this.errorMessage = `${this.mapErrorMessage} <a href="${this.hostname}/${this.selectedLanguage}/selectaddress">${this.mapLabel}</a>.`;
             }
         }
     }
@@ -594,7 +594,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     _makeOrderRequest(cart) {
         if(this.isMakeOrderRequestRunning) return;
         const ajax = this.$.makeOrderAjax;
-        const url = `${this.hostname}/order/${this.language}`;
+        const url = `${this.hostname}/order/${this.selectedLanguage}`;
         ajax.url = this._generateLinkWithQrCode(this.qrUuid, url);
         ajax.method = 'POST';
         this.isMakeOrderRequestRunning = true;
@@ -721,7 +721,7 @@ class WiseShoppingCartContainer extends PolymerElement {
             this.cart = await this.updateCartWithAddressLocation(location);
             return this.cart;
         } catch (e) {
-            this.errorMessage = `${this.mapErrorMessage} <a href="${this.hostname}/${this.language}/selectaddress">${this.mapLabel}</a>.`;
+            this.errorMessage = `${this.mapErrorMessage} <a href="${this.hostname}/${this.selectedLanguage}/selectaddress">${this.mapLabel}</a>.`;
         }
     }
 
