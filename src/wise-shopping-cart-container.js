@@ -75,7 +75,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                     color: red;
                     min-height: 1.2em;
                 }
-                
+
                 .info-span{
                     padding-left: 15.5px;
                 }
@@ -156,7 +156,11 @@ class WiseShoppingCartContainer extends PolymerElement {
                 <div class="cart-container">
                     <div class="cart">
                         <div class="shopping-cart-container">
-                            <wise-shopping-cart selected-language = "[[selectedLanguage]]" currency-label="[[currencyLabel]]" cart-items="[[cart.items]]" basket-empty-label="[[basketEmptyLabel]]"
+                            <wise-shopping-cart banner-name="[[cart.configuration.additionalConfiguration.banner.bannerName]]"
+                                                banner-description="[[cart.configuration.additionalConfiguration.banner.bannerDescription]]"
+                                                is-banner-on="[[cart.configuration.additionalConfiguration.banner.isBannerOn]]"
+                                                selected-language = "[[selectedLanguage]]" currency-label="[[currencyLabel]]"
+                                                 cart-items="[[cart.items]]" basket-empty-label="[[basketEmptyLabel]]"
                                                 start-shopping-label="[[startShoppingLabel]]">
                             </wise-shopping-cart>
                         </div>
@@ -338,7 +342,6 @@ class WiseShoppingCartContainer extends PolymerElement {
             mapLabel: String,
             mapErrorMessage: String,
 
-
             basketEmptyLabel: String,
             startShoppingLabel: String,
             courierLabel: String,
@@ -431,6 +434,7 @@ class WiseShoppingCartContainer extends PolymerElement {
     ready() {
         super.ready();
 
+        //rewrite this method
         this.hideDeliveryTypeIfQrPresent();
         console.log("qrUuid =>", this.qrUuid);
         const params = this.addCartIdParamIfAvailable(true);
@@ -481,7 +485,7 @@ class WiseShoppingCartContainer extends PolymerElement {
         });
 
     }
-    
+
     _generateLinkWithQrCode(qrId, url){
         return qrId ? `${url}?qr_uuid=${qrId}` : `${url}`;
     }
@@ -545,7 +549,7 @@ class WiseShoppingCartContainer extends PolymerElement {
                 isValid = false;
             }
         });
-        
+
         const isCourierDeliverySelected = this.cart.deliveryType === 'COURIER';
 
         if (isValid && !isCourierDeliverySelected) {
